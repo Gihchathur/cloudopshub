@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/services/" />
+  <Folder Name="/services/notification-service/">
+    <Project Path="services/notification-service/CloudOpsHub.NotificationService/CloudOpsHub.NotificationService.csproj" />
+  </Folder>
+  <Folder Name="/services/order-service/">
+    <Project Path="services/order-service/CloudOpsHub.OrderService/CloudOpsHub.OrderService.csproj" />
+  </Folder>
+  <Folder Name="/services/user-service/">
+    <Project Path="services/user-service/CloudOpsHub.UserService/CloudOpsHub.UserService.csproj" />
+  </Folder>
+</Solution>

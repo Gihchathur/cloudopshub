@@ -1,0 +1,44 @@
+# .NET
+bin/
+obj/
+TestResults/
+.vs/
+*.user
+*.suo
+
+# Rider
+.idea/
+
+# Visual Studio Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+*.tfvars
+*.tfvars.json
+
+# Certificates
+*.pfx
+*.pem
+*.key
+
+# Docker
+docker-data/
+
+# Logs
+*.log
+
+# Local configuration
+appsettings.Development.local.json

@@ -1,0 +1,6 @@
+@CloudOpsHub.OrderService_HostAddress = http://localhost:5163
+
+GET {{CloudOpsHub.OrderService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
