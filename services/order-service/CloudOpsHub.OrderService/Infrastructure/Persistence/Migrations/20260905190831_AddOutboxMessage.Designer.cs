@@ -3,6 +3,7 @@ using System;
 using CloudOpsHub.OrderService.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CloudOpsHub.OrderService.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(OrderDbContext))]
-    partial class OrderDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260905190831_AddOutboxMessage")]
+    partial class AddOutboxMessage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -62,14 +65,8 @@ namespace CloudOpsHub.OrderService.Infrastructure.Persistence.Migrations
                     b.Property<int>("Attempts")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime?>("DeadLetteredOnUtc")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("Error")
                         .HasColumnType("text");
-
-                    b.Property<DateTime?>("NextAttemptAtUtc")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("OccurredOnUtc")
                         .HasColumnType("timestamp with time zone");
@@ -88,7 +85,7 @@ namespace CloudOpsHub.OrderService.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProcessedOnUtc", "DeadLetteredOnUtc", "NextAttemptAtUtc");
+                    b.HasIndex("ProcessedOnUtc");
 
                     b.ToTable("OutboxMessages", (string)null);
                 });

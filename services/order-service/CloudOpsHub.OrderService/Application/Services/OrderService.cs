@@ -1,9 +1,10 @@
 using CloudOpsHub.OrderService.Application.DTOs;
 using CloudOpsHub.OrderService.Domain.Entities;
 using CloudOpsHub.OrderService.Application.Events;
-using CloudOpsHub.OrderService.Infrastructure.Messaging;
 using CloudOpsHub.OrderService.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
+using CloudOpsHub.OrderService.Domain;
 
 namespace CloudOpsHub.OrderService.Application.Services;
 
@@ -11,26 +12,19 @@ public class OrderService
 {
     private readonly OrderDbContext _dbContext;
 
-    private readonly IRabbitMqPublisher _publisher;
-
-    public OrderService(OrderDbContext dbContext, IRabbitMqPublisher publisher)
+    public OrderService(OrderDbContext dbContext)
     {
         _dbContext = dbContext;
-        _publisher = publisher;
     }
 
     public async Task<OrderResponse> CreateAsync(
         CreateOrderRequest request,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
     {
         var order = new Order(
             request.UserId,
             request.TotalAmount,
             request.Currency);
-
-        _dbContext.Orders.Add(order);
-
-        await _dbContext.SaveChangesAsync(cancellationToken);
 
         var orderCreatedEvent = new OrderCreatedEvent(
             order.Id,
@@ -39,13 +33,22 @@ public class OrderService
             order.Currency,
             order.CreatedAt);
 
-        await _publisher.PublishAsync(
-            exchange: "cloudopshub.events",
-            routingKey: "order.created",
-            message: orderCreatedEvent,
-            cancellationToken);
+        var outboxMessage = new OutboxMessage(
+            type: nameof(OrderCreatedEvent),
+            payload: JsonSerializer.Serialize(orderCreatedEvent));
 
-        return Map(order);
+        _dbContext.Orders.Add(order);
+        _dbContext.OutboxMessages.Add(outboxMessage);
+
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return new OrderResponse(
+            order.Id,
+            order.UserId,
+            order.TotalAmount,
+            order.Currency,
+            order.Status,
+            order.CreatedAt);
     }
 
     public async Task<OrderResponse?> GetByIdAsync(

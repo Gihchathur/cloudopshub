@@ -9,4 +9,8 @@
   <Folder Name="/services/user-service/">
     <Project Path="services/user-service/CloudOpsHub.UserService/CloudOpsHub.UserService.csproj" />
   </Folder>
+  <Folder Name="/tests/" />
+  <Folder Name="/tests/order-service-tests/">
+    <Project Path="tests/order-service-tests/CloudOpsHub.OrderService.Tests.csproj" />
+  </Folder>
 </Solution>

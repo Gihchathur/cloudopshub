@@ -19,6 +19,11 @@ builder.Services.AddDbContext<OrderDbContext>(options =>
 
 builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<IRabbitMqPublisher, RabbitMqPublisher>();
+builder.Services.AddScoped<CloudOpsHub.OrderService.Application.Services.OutboxService>();
+
+builder.Services.Configure<OutboxOptions>(builder.Configuration.GetSection("Outbox"));
+
+builder.Services.AddHostedService<OutboxPublisherWorker>();
 
 var app = builder.Build();
 
