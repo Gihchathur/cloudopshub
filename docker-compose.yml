@@ -4,9 +4,9 @@ services:
     image: postgres:17
     container_name: cloudopshub-postgres
     environment:
+      POSTGRES_DB: cloudopshub
       POSTGRES_USER: cloudops
       POSTGRES_PASSWORD: cloudops_dev_password
-      POSTGRES_DB: cloudopshub
     ports:
       - "5432:5432"
     volumes:
@@ -15,7 +15,7 @@ services:
       test: ["CMD-SHELL", "pg_isready -U cloudops -d cloudopshub"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
 
   rabbitmq:
     image: rabbitmq:4-management
@@ -30,9 +30,48 @@ services:
       - rabbitmq_data:/var/lib/rabbitmq
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
-      interval: 10s
+      interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
+
+  order-service:
+    image: cloudopshub/order-service:local
+    container_name: cloudopshub-order-service
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=cloudopshub;Username=cloudops;Password=cloudops_dev_password
+
+      RabbitMq__Host: rabbitmq
+      RabbitMq__Port: 5672
+      RabbitMq__UserName: cloudops
+      RabbitMq__Password: cloudops_dev_password
+
+      Outbox__PollingIntervalSeconds: 5
+      Outbox__MaxAttempts: 10
+      Outbox__BatchSize: 20
+
+    ports:
+      - "5163:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  notification-service:
+    image: cloudopshub/notification-service:local
+    container_name: cloudopshub-notification-service
+    environment:
+      RabbitMq__Host: rabbitmq
+      RabbitMq__Port: 5672
+      RabbitMq__UserName: cloudops
+      RabbitMq__Password: cloudops_dev_password
+
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
 
 volumes:
   postgres_data:

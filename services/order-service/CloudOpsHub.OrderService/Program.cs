@@ -14,7 +14,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<OrderDbContext>(options =>
 {
     options.UseNpgsql(
-        builder.Configuration.GetConnectionString("Postgres"));
+        builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
 builder.Services.AddScoped<OrderService>();
