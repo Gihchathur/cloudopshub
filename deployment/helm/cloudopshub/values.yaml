@@ -1,0 +1,57 @@
+namespace: cloudopshub
+
+orderService:
+  replicaCount: 1
+
+  image:
+    repository: cloudopshub/order-service
+    tag: local
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 8080
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+notificationService:
+  replicaCount: 1
+
+  image:
+    repository: cloudopshub/notification-service
+    tag: local
+    pullPolicy: IfNotPresent
+
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+
+postgres:
+  image: postgres:17
+
+  database: cloudopshub
+  username: cloudops
+  password: cloudops_dev_password
+
+  service:
+    port: 5432
+
+rabbitmq:
+  image: rabbitmq:4-management
+
+  username: cloudops
+  password: cloudops_dev_password
+
+  service:
+    port: 5672
+    managementPort: 15672

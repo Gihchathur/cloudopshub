@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: notification-service
+spec:
+  replicas: {{ .Values.notificationService.replicaCount }}
+
+  selector:
+    matchLabels:
+      app: notification-service
+
+  template:
+    metadata:
+      labels:
+        app: notification-service
+
+    spec:
+      containers:
+        - name: notification-service
+
+          image: "{{ .Values.notificationService.image.repository }}:{{ .Values.notificationService.image.tag }}"
+
+          imagePullPolicy: {{ .Values.notificationService.image.pullPolicy }}
+
+          env:
+            - name: RabbitMq__Host
+              value: rabbitmq
+
+            - name: RabbitMq__Port
+              value: "5672"
+
+            - name: RabbitMq__UserName
+              value: {{ .Values.rabbitmq.username | quote }}
+
+            - name: RabbitMq__Password
+              value: {{ .Values.rabbitmq.password | quote }}
+
+          resources:
+            requests:
+              cpu: {{ .Values.notificationService.resources.requests.cpu }}
+              memory: {{ .Values.notificationService.resources.requests.memory }}
+
+            limits:
+              cpu: {{ .Values.notificationService.resources.limits.cpu }}
+              memory: {{ .Values.notificationService.resources.limits.memory }}

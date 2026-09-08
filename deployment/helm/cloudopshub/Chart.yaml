@@ -1,0 +1,6 @@
+apiVersion: v2
+name: cloudopshub
+description: Production-grade cloud-native platform for CloudOpsHub
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
